@@ -1,0 +1,16 @@
+MRP: Mini Research Problem
+Due Wednesday by 11:59pm Points 500 Submitting a website url Available Jul 6 at 12am - Sep 13 at 11:59pm
+MRP to be done in form of a pdf presentation that should be shared via student’s github (please put the link to it as a result of this assignment)
+
+PDF slide deck should contain:
+
+tl;dr: motivation, main idea, and results briefly (1 slide)
+Literature review on the related methods
+Approach used (with all relevant links used)
+Link to the code used to achieve your goal
+Each item above is important!
+Presentations to be presented by the author during the last onground session
+
+Duration of presentation: apprx 10 min
+
+General Topics include all the directions learned through the lectures (but not limited to - just contact your instructor in advance).
