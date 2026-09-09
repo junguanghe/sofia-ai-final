@@ -1,0 +1,85 @@
+{
+  "utc": "2026-09-09T06:04:15.221288+00:00",
+  "cpu": "AMD Ryzen 5 3500U with Radeon Vega Mobile Gfx",
+  "platform": "Linux-7.0.0-31-generic-x86_64-with-glibc2.39",
+  "python": "3.12.7",
+  "torch": "2.13.0+cpu",
+  "threads": 4,
+  "dtype": "float32",
+  "batch_size": 1,
+  "repeats": 5,
+  "warmup_runs_per_config": 2,
+  "shuffle_seed": 2026,
+  "checkpoint_sha256": "d5d5dbbddfd4263e1ae942c2b991ee179ca2c86b7e6ab12acb75ba9a5b6f85cd",
+  "data_sha256": "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed",
+  "timing": "model forward calls only; excludes loading, tokenization, sampling and text assembly",
+  "decode_predictions": 63,
+  "summary": [
+    {
+      "prompt_tokens": 16,
+      "mode": "uncached",
+      "prefill_ms": 2.3231360246427357,
+      "decode_ms": 195.929110981524,
+      "total_ms": 198.25224700616673,
+      "decode_chars_s": 321.54486734715425,
+      "total_min_ms": 190.52122597349808,
+      "total_max_ms": 202.34279200667515,
+      "cache_KiB": 0.0
+    },
+    {
+      "prompt_tokens": 16,
+      "mode": "cached",
+      "prefill_ms": 2.687358995899558,
+      "decode_ms": 112.3166200122796,
+      "total_ms": 115.00397900817916,
+      "decode_chars_s": 560.9143152020796,
+      "total_min_ms": 112.98619396984577,
+      "total_max_ms": 128.66364198271185,
+      "cache_KiB": 158.0
+    },
+    {
+      "prompt_tokens": 32,
+      "mode": "uncached",
+      "prefill_ms": 2.9144830186851323,
+      "decode_ms": 226.53167200041935,
+      "total_ms": 229.61733699776232,
+      "decode_chars_s": 278.10680706882954,
+      "total_min_ms": 215.85040801437572,
+      "total_max_ms": 234.9120950093493,
+      "cache_KiB": 0.0
+    },
+    {
+      "prompt_tokens": 32,
+      "mode": "cached",
+      "prefill_ms": 2.9913790058344603,
+      "decode_ms": 115.86785200051963,
+      "total_ms": 118.8592310063541,
+      "decode_chars_s": 543.7228611066118,
+      "total_min_ms": 108.73166198143736,
+      "total_max_ms": 175.1816629548557,
+      "cache_KiB": 190.0
+    },
+    {
+      "prompt_tokens": 64,
+      "mode": "uncached",
+      "prefill_ms": 3.7876410060562193,
+      "decode_ms": 278.0391759588383,
+      "total_ms": 282.0570139447227,
+      "decode_chars_s": 226.58677426567647,
+      "total_min_ms": 253.29561700345948,
+      "total_max_ms": 302.8619300457649,
+      "cache_KiB": 0.0
+    },
+    {
+      "prompt_tokens": 64,
+      "mode": "cached",
+      "prefill_ms": 3.503874992020428,
+      "decode_ms": 113.48967795493081,
+      "total_ms": 117.54495097557083,
+      "decode_chars_s": 555.1165633320296,
+      "total_min_ms": 114.71686302684247,
+      "total_max_ms": 184.87544503295794,
+      "cache_KiB": 254.0
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "command": "python3 sample.py",
+  "prompt": "ROMEO:\n",
+  "new_tokens": 100,
+  "temperature": 0.8,
+  "seed": 42,
+  "use_cache": true
+}

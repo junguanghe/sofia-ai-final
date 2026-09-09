@@ -1,0 +1,7 @@
+{
+  "tests_passed": 5,
+  "max_abs_logit_error": 7.152557373046875e-06,
+  "atol": 1e-05,
+  "rtol": 0.0001,
+  "checkpoint_sha256": "d5d5dbbddfd4263e1ae942c2b991ee179ca2c86b7e6ab12acb75ba9a5b6f85cd"
+}

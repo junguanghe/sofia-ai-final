@@ -1,0 +1,25 @@
+{
+  "config": {
+    "vocab_size": 65,
+    "context": 128,
+    "width": 128,
+    "heads": 4,
+    "layers": 2,
+    "dropout": 0.1
+  },
+  "steps": 3000,
+  "batch_size": 8,
+  "learning_rate": 0.0003,
+  "optimizer": "AdamW (PyTorch defaults except lr)",
+  "seed": 1337,
+  "threads": 4,
+  "torch": "2.13.0+cpu",
+  "parameters": 429121,
+  "train_chars": 1003854,
+  "val_chars": 111540,
+  "data_sha256": "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed",
+  "checkpoint_sha256": "d5d5dbbddfd4263e1ae942c2b991ee179ca2c86b7e6ab12acb75ba9a5b6f85cd",
+  "elapsed_s": 301.3059157470125,
+  "best_val_loss": 1.83140829205513,
+  "checkpoint": "checkpoints/tiny_gpt.pt"
+}
