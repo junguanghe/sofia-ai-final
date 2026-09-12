@@ -11,7 +11,7 @@ greedy outputs on the tested prompts. This is one small CPU experiment.
 
 ## Presentation and learning material
 
-- [PDF slides](output/pdf/mrp.pdf) - 8 slides for about 10 minutes.
+- [PDF slides](output/pdf/mrp.pdf) - 10 slides for about 10 minutes.
 - [Editable slide source](docs/slides.md) - Markdown, with `---` between slides.
 - [中文学习笔记](docs/learning_zh.md) - tensor shapes, code walkthrough and exercises.
 - [English speaking notes](docs/speaker_notes.md) - a timed outline and likely questions.

@@ -4,10 +4,37 @@ Accelerating a tiny Shakespeare Transformer on a laptop CPU
 
 **Junguang He - MSCS2201 Mini Research Problem**
 
-- Motivation: ordinary generation repeatedly computes the same history.
+- Motivation: serving more users requires efficient inference. A naive generation loop repeatedly computes the same history.
 - Approach: train one small model, then compare generation with and without a request-local KV cache.
 - Result: **1.72-2.40x faster model execution** across three prompt lengths, using **158-254 KiB** of final KV tensors.
 - Correctness: maximum tested logit difference **0.0000072**. Greedy outputs matched in the tests.
+
+---
+
+# Why inference efficiency matters
+
+Meta projected **$130-145 billion** in 2026 capital expenditure for AI and its core business. This is company-wide investment, not an inference bill. [4]
+
+| Framework | Public deployment example |
+| --- | --- |
+| vLLM | AWS uses vLLM-based optimizations in parts of SageMaker AI and Bedrock model hosting. [5] |
+| SGLang | LinkedIn uses it for LLM ranking in AI Job Search and AI People Search. [6] |
+
+Efficient serving can support more requests with the same hardware budget.
+
+Sources: [4: Meta Q2 2026 filing](https://www.sec.gov/Archives/edgar/data/1326801/000162828026050705/meta-20260630.htm), [5: AWS engineering](https://aws.amazon.com/blogs/machine-learning/efficiently-serve-dozens-of-fine-tuned-models-with-vllm-on-amazon-sagemaker-ai-and-amazon-bedrock/), [6: LinkedIn engineering](https://www.linkedin.com/blog/engineering/ai/scaling-llm-based-ranking-systems-with-sglang-at-linkedin).
+
+---
+
+# Why study KV caching?
+
+- A naive decode loop recomputes past token states. KV caching reuses them, reducing computation at the cost of memory.
+- Decode, especially at small batch sizes, is often limited by memory bandwidth. Reading weights and historical KV still takes time. [7]
+- Production evidence: in 2023, LMSYS reported using **50% fewer serving GPUs** after switching to vLLM. This was a system-level result, not an isolated KV-cache comparison. [8]
+
+**Project question:** How much model execution time does ordinary KV caching save, and how much cache memory does it use, on a laptop CPU?
+
+Sources: [7: NVIDIA inference guide](https://developer.nvidia.com/blog/?p=73739), [8: vLLM deployment report, 2023](https://vllm.ai/blog/2023-06-20-vllm).
 
 ---
 
