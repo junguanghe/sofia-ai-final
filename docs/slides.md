@@ -107,4 +107,4 @@ Totals are medians of prefill + decode model execution time.
 **Code, raw measurements and reproduction commands:**
 [github.com/junguanghe/sofia-ai-final](https://github.com/junguanghe/sofia-ai-final)
 
-Project work: cache implementation and a small CPU experiment. Codex assisted with coding, tests, analysis and document preparation.
+Project work: cache implementation and a small CPU experiment.
