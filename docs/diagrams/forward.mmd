@@ -1,0 +1,17 @@
+flowchart TD
+    IDs["tokens: [B,T] = [8,128]<br/>整数字符编号"]
+    TE["token_embedding 查表<br/>[B,T,C] = [8,128,128]<br/>字符的可学习向量"]
+    P["positions: [T] = [128]<br/>编号 0 到 127"]
+    PE["position_embedding 查表<br/>[T,C] = [128,128]<br/>位置的可学习向量"]
+    ADD["逐元素相加<br/>位置向量沿 batch 维广播<br/>x: [8,128,128]"]
+    B0["Block 0：attention + FFN<br/>[8,128,128] → [8,128,128]<br/>内部操作见图 2"]
+    B1["Block 1：attention + FFN<br/>[8,128,128] → [8,128,128]<br/>另一套独立参数"]
+    LN["最终 LayerNorm<br/>沿 C 维归一化<br/>[8,128,128]"]
+    OUT["lm_head: Linear(128,65)<br/>[8,128,65]<br/>每个位置预测下一个字符的 65 个 logits"]
+    FLAT["合并 B、T 两维<br/>[1024,65]"]
+    TARGET["目标字符编号 y<br/>[8,128] → [1024]<br/>输入序列后移一个字符"]
+    LOSS["cross_entropy<br/>标量 loss，形状 []<br/>1024 个位置的平均损失"]
+    IDs --> TE --> ADD
+    P --> PE --> ADD
+    ADD --> B0 --> B1 --> LN --> OUT --> FLAT --> LOSS
+    TARGET --> LOSS

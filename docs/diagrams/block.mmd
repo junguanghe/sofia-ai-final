@@ -1,0 +1,32 @@
+flowchart TD
+    X["Block 输入 x<br/>[B,T,128]"]
+    LN1["ln1: LayerNorm(128)<br/>[B,T,128]<br/>每个位置独立归一化"]
+    Q["Linear(128,32)，无 bias<br/>Q: [B,T,32]<br/>用于查询上下文"]
+    K["Linear(128,32)，无 bias<br/>K: [B,T,32]<br/>用于与 query 匹配"]
+    VAL["Linear(128,32)，无 bias<br/>V: [B,T,32]<br/>待聚合的信息"]
+    KT["K.transpose(-2,-1)<br/>[B,32,T]"]
+    SCORE["Q @ K转置 / sqrt(32)<br/>[B,T,T]<br/>每个 query 对各个 key 的分数"]
+    MASK["因果 mask: [T,T]，沿 B 广播<br/>未来位置填为负无穷<br/>分数仍为 [B,T,T]"]
+    SOFT["softmax(dim=-1)<br/>[B,T,T]<br/>对每个 query 的 key 分数归一化"]
+    ADROP["attention dropout<br/>[B,T,T]<br/>训练 p=0.1，eval 时关闭"]
+    HEAD["attention weights @ V<br/>[B,T,T] @ [B,T,32]<br/>单头输出 [B,T,32]"]
+    CAT["4 个独立 head 并行<br/>沿最后一维 concat<br/>[B,T,4×32] = [B,T,128]"]
+    PROJ["proj: Linear(128,128) + dropout<br/>[B,T,128]<br/>混合不同 head 的结果"]
+    ADD1["第一次残差相加<br/>x1 = x + attention_output<br/>[B,T,128]"]
+    LN2["ln2: LayerNorm(128)<br/>[B,T,128]"]
+    FF1["Linear(128,512)<br/>[B,T,512]<br/>扩展每个位置的特征维度"]
+    ACT["ReLU<br/>[B,T,512]<br/>引入非线性"]
+    FF2["Linear(512,128) + dropout<br/>[B,T,128]<br/>映射回模型宽度"]
+    ADD2["第二次残差相加<br/>output = x1 + FFN_output<br/>[B,T,128]"]
+    X --> LN1
+    LN1 --> Q
+    LN1 --> K --> KT
+    LN1 --> VAL
+    Q --> SCORE
+    KT --> SCORE
+    SCORE --> MASK --> SOFT --> ADROP --> HEAD
+    VAL --> HEAD
+    HEAD --> CAT --> PROJ --> ADD1
+    X -->|残差直连| ADD1
+    ADD1 --> LN2 --> FF1 --> ACT --> FF2 --> ADD2
+    ADD1 -->|残差直连| ADD2

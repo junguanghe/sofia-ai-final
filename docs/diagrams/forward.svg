@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1640" height="1720" viewBox="0 0 1640 1720">
+<title>forward: Transformer tensor operations</title>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="Noto Sans CJK SC, sans-serif" font-size="27" fill="#192c3b">
+<polyline points="350.0,125 350.0,150.0 350.0,175" fill="none" stroke="#647888" stroke-width="3"/>
+<polygon points="350.0,175 356.0,161.0 344.0,161.0" fill="#647888"/>
+<polyline points="350.0,310 350.0,340.0 700.0,340.0 700.0,370" fill="none" stroke="#647888" stroke-width="3"/>
+<polygon points="700.0,370 706.0,356.0 694.0,356.0" fill="#647888"/>
+<polyline points="1050.0,125 1050.0,150.0 1050.0,175" fill="none" stroke="#647888" stroke-width="3"/>
+<polygon points="1050.0,175 1056.0,161.0 1044.0,161.0" fill="#647888"/>
+<polyline points="1050.0,310 1050.0,340.0 700.0,340.0 700.0,370" fill="none" stroke="#647888" stroke-width="3"/>
+<polygon points="700.0,370 706.0,356.0 694.0,356.0" fill="#647888"/>
+<polyline points="700.0,505 700.0,532.5 700.0,560" fill="none" stroke="#647888" stroke-width="3"/>
+<polygon points="700.0,560 706.0,546.0 694.0,546.0" fill="#647888"/>
+<polyline points="700.0,695 700.0,722.5 700.0,750" fill="none" stroke="#647888" stroke-width="3"/>
+<polygon points="700.0,750 706.0,736.0 694.0,736.0" fill="#647888"/>
+<polyline points="700.0,885 700.0,912.5 700.0,940" fill="none" stroke="#647888" stroke-width="3"/>
+<polygon points="700.0,940 706.0,926.0 694.0,926.0" fill="#647888"/>
+<polyline points="700.0,1075 700.0,1102.5 700.0,1130" fill="none" stroke="#647888" stroke-width="3"/>
+<polygon points="700.0,1130 706.0,1116.0 694.0,1116.0" fill="#647888"/>
+<polyline points="700.0,1265 700.0,1292.5 700.0,1320" fill="none" stroke="#647888" stroke-width="3"/>
+<polygon points="700.0,1320 706.0,1306.0 694.0,1306.0" fill="#647888"/>
+<polyline points="700.0,1415 700.0,1475.0 700.0,1535" fill="none" stroke="#647888" stroke-width="3"/>
+<polygon points="700.0,1535 706.0,1521.0 694.0,1521.0" fill="#647888"/>
+<polyline points="1355.0,1505 1355,1602.5 1060,1602.5" fill="none" stroke="#647888" stroke-width="3"/>
+<polygon points="1060,1602.5 1074.0,1608.5 1074.0,1596.5" fill="#647888"/>
+<rect x="50" y="30" width="600" height="95" rx="8" fill="#fafbfc" stroke="#647888" stroke-width="2"/>
+<text x="350.0" y="59.0" text-anchor="middle" dominant-baseline="central">tokens: [B,T] = [8,128]</text>
+<text x="350.0" y="96.0" text-anchor="middle" dominant-baseline="central">整数字符编号</text>
+<rect x="50" y="175" width="600" height="135" rx="8" fill="#fafbfc" stroke="#647888" stroke-width="2"/>
+<text x="350.0" y="205.5" text-anchor="middle" dominant-baseline="central">token_embedding 查表</text>
+<text x="350.0" y="242.5" text-anchor="middle" dominant-baseline="central">[B,T,C] = [8,128,128]</text>
+<text x="350.0" y="279.5" text-anchor="middle" dominant-baseline="central">字符的可学习向量</text>
+<rect x="750" y="30" width="600" height="95" rx="8" fill="#fafbfc" stroke="#647888" stroke-width="2"/>
+<text x="1050.0" y="59.0" text-anchor="middle" dominant-baseline="central">positions: [T] = [128]</text>
+<text x="1050.0" y="96.0" text-anchor="middle" dominant-baseline="central">编号 0 到 127</text>
+<rect x="750" y="175" width="600" height="135" rx="8" fill="#fafbfc" stroke="#647888" stroke-width="2"/>
+<text x="1050.0" y="205.5" text-anchor="middle" dominant-baseline="central">position_embedding 查表</text>
+<text x="1050.0" y="242.5" text-anchor="middle" dominant-baseline="central">[T,C] = [128,128]</text>
+<text x="1050.0" y="279.5" text-anchor="middle" dominant-baseline="central">位置的可学习向量</text>
+<rect x="340" y="370" width="720" height="135" rx="8" fill="#eef4f8" stroke="#647888" stroke-width="2"/>
+<text x="700.0" y="400.5" text-anchor="middle" dominant-baseline="central">逐元素相加</text>
+<text x="700.0" y="437.5" text-anchor="middle" dominant-baseline="central">位置向量沿 batch 维广播</text>
+<text x="700.0" y="474.5" text-anchor="middle" dominant-baseline="central">x: [8,128,128]</text>
+<rect x="340" y="560" width="720" height="135" rx="8" fill="#fafbfc" stroke="#647888" stroke-width="2"/>
+<text x="700.0" y="590.5" text-anchor="middle" dominant-baseline="central">Block 0：attention + FFN</text>
+<text x="700.0" y="627.5" text-anchor="middle" dominant-baseline="central">[8,128,128] → [8,128,128]</text>
+<text x="700.0" y="664.5" text-anchor="middle" dominant-baseline="central">内部操作见图 2</text>
+<rect x="340" y="750" width="720" height="135" rx="8" fill="#fafbfc" stroke="#647888" stroke-width="2"/>
+<text x="700.0" y="780.5" text-anchor="middle" dominant-baseline="central">Block 1：attention + FFN</text>
+<text x="700.0" y="817.5" text-anchor="middle" dominant-baseline="central">[8,128,128] → [8,128,128]</text>
+<text x="700.0" y="854.5" text-anchor="middle" dominant-baseline="central">另一套独立参数</text>
+<rect x="340" y="940" width="720" height="135" rx="8" fill="#fafbfc" stroke="#647888" stroke-width="2"/>
+<text x="700.0" y="970.5" text-anchor="middle" dominant-baseline="central">最终 LayerNorm</text>
+<text x="700.0" y="1007.5" text-anchor="middle" dominant-baseline="central">沿 C 维归一化</text>
+<text x="700.0" y="1044.5" text-anchor="middle" dominant-baseline="central">[8,128,128]</text>
+<rect x="300" y="1130" width="800" height="135" rx="8" fill="#eef4f8" stroke="#647888" stroke-width="2"/>
+<text x="700.0" y="1160.5" text-anchor="middle" dominant-baseline="central">lm_head: Linear(128,65)</text>
+<text x="700.0" y="1197.5" text-anchor="middle" dominant-baseline="central">[8,128,65]</text>
+<text x="700.0" y="1234.5" text-anchor="middle" dominant-baseline="central">每个位置预测下一个字符的 65 个 logits</text>
+<rect x="340" y="1320" width="720" height="95" rx="8" fill="#fafbfc" stroke="#647888" stroke-width="2"/>
+<text x="700.0" y="1349.0" text-anchor="middle" dominant-baseline="central">合并 B、T 两维</text>
+<text x="700.0" y="1386.0" text-anchor="middle" dominant-baseline="central">[1024,65]</text>
+<rect x="1120" y="1370" width="470" height="135" rx="8" fill="#fafbfc" stroke="#647888" stroke-width="2"/>
+<text x="1355.0" y="1400.5" text-anchor="middle" dominant-baseline="central">目标字符编号 y</text>
+<text x="1355.0" y="1437.5" text-anchor="middle" dominant-baseline="central">[8,128] → [1024]</text>
+<text x="1355.0" y="1474.5" text-anchor="middle" dominant-baseline="central">输入序列后移一个字符</text>
+<rect x="340" y="1535" width="720" height="135" rx="8" fill="#eef4f8" stroke="#647888" stroke-width="2"/>
+<text x="700.0" y="1565.5" text-anchor="middle" dominant-baseline="central">cross_entropy</text>
+<text x="700.0" y="1602.5" text-anchor="middle" dominant-baseline="central">标量 loss，形状 []</text>
+<text x="700.0" y="1639.5" text-anchor="middle" dominant-baseline="central">1024 个位置的平均损失</text>
+</g></svg>

@@ -1,0 +1,21 @@
+flowchart TD
+    X["新位置的归一化输入<br/>[1,1,128]"]
+    Q["新 Q<br/>[1,1,32]"]
+    K["新 K<br/>[1,1,32]"]
+    V["新 V<br/>[1,1,32]"]
+    PK["历史 K 缓存<br/>[1,16,32]"]
+    PV["历史 V 缓存<br/>[1,16,32]"]
+    ALLK["沿序列维 cat<br/>完整 K: [1,17,32]"]
+    ALLV["沿序列维 cat<br/>完整 V: [1,17,32]"]
+    SCORE["Q @ K转置 / sqrt(32)<br/>[1,1,32] @ [1,32,17]<br/>分数 [1,1,17]"]
+    ATTN["取绝对位置 16 的 mask 行<br/>mask: [1,17]，此例全部可见<br/>softmax 后权重 [1,1,17]"]
+    OUT["weights @ V<br/>[1,1,17] @ [1,17,32]<br/>新位置的单头输出 [1,1,32]"]
+    NEXT["返回更新后的 K、V<br/>各为 [1,17,32]<br/>供下一次调用复用"]
+    X --> Q --> SCORE
+    X --> K --> ALLK
+    PK --> ALLK --> SCORE
+    X --> V --> ALLV
+    PV --> ALLV --> OUT
+    SCORE --> ATTN --> OUT
+    ALLK --> NEXT
+    ALLV --> NEXT

@@ -23,25 +23,9 @@
 
 这里先看普通训练路径：`use_cache=False, last_only=False`。
 
-```mermaid
-flowchart TD
-    IDs["tokens: [B,T] = [8,128]<br/>整数字符编号"]
-    TE["token_embedding 查表<br/>[B,T,C] = [8,128,128]<br/>字符的可学习向量"]
-    P["positions: [T] = [128]<br/>编号 0 到 127"]
-    PE["position_embedding 查表<br/>[T,C] = [128,128]<br/>位置的可学习向量"]
-    ADD["逐元素相加<br/>位置向量沿 batch 维广播<br/>x: [8,128,128]"]
-    B0["Block 0：attention + FFN<br/>[8,128,128] → [8,128,128]<br/>内部操作见图 2"]
-    B1["Block 1：attention + FFN<br/>[8,128,128] → [8,128,128]<br/>另一套独立参数"]
-    LN["最终 LayerNorm<br/>沿 C 维归一化<br/>[8,128,128]"]
-    OUT["lm_head: Linear(128,65)<br/>[8,128,65]<br/>每个位置预测下一个字符的 65 个 logits"]
-    FLAT["合并 B、T 两维<br/>[1024,65]"]
-    TARGET["目标字符编号 y<br/>[8,128] → [1024]<br/>输入序列后移一个字符"]
-    LOSS["cross_entropy<br/>标量 loss，形状 []<br/>1024 个位置的平均损失"]
-    IDs --> TE --> ADD
-    P --> PE --> ADD
-    ADD --> B0 --> B1 --> LN --> OUT --> FLAT --> LOSS
-    TARGET --> LOSS
-```
+![整体 forward 张量流程图](diagrams/forward.png)
+
+[SVG 矢量图](diagrams/forward.svg) · [Mermaid 源码](diagrams/forward.mmd)
 
 - embedding 是**用整数编号查表**，不是把 `[B,T]` 的整数矩阵直接乘 embedding 权重。
 - position embedding 的 `[T,C]` 在相加时广播为 `[B,T,C]`，同一个位置编号使用同一条位置向量。
@@ -52,40 +36,9 @@ flowchart TD
 
 两个 Block 结构相同，参数互不共享。以下仍为普通训练路径，单个 head 的 `d=32`。
 
-```mermaid
-flowchart TD
-    X["Block 输入 x<br/>[B,T,128]"]
-    LN1["ln1: LayerNorm(128)<br/>[B,T,128]<br/>每个位置独立归一化"]
-    Q["Linear(128,32)，无 bias<br/>Q: [B,T,32]<br/>用于查询上下文"]
-    K["Linear(128,32)，无 bias<br/>K: [B,T,32]<br/>用于与 query 匹配"]
-    VAL["Linear(128,32)，无 bias<br/>V: [B,T,32]<br/>待聚合的信息"]
-    KT["K.transpose(-2,-1)<br/>[B,32,T]"]
-    SCORE["Q @ K转置 / sqrt(32)<br/>[B,T,T]<br/>每个 query 对各个 key 的分数"]
-    MASK["因果 mask: [T,T]，沿 B 广播<br/>未来位置填为负无穷<br/>分数仍为 [B,T,T]"]
-    SOFT["softmax(dim=-1)<br/>[B,T,T]<br/>对每个 query 的 key 分数归一化"]
-    ADROP["attention dropout<br/>[B,T,T]<br/>训练 p=0.1，eval 时关闭"]
-    HEAD["attention weights @ V<br/>[B,T,T] @ [B,T,32]<br/>单头输出 [B,T,32]"]
-    CAT["4 个独立 head 并行<br/>沿最后一维 concat<br/>[B,T,4×32] = [B,T,128]"]
-    PROJ["proj: Linear(128,128) + dropout<br/>[B,T,128]<br/>混合不同 head 的结果"]
-    ADD1["第一次残差相加<br/>x1 = x + attention_output<br/>[B,T,128]"]
-    LN2["ln2: LayerNorm(128)<br/>[B,T,128]"]
-    FF1["Linear(128,512)<br/>[B,T,512]<br/>扩展每个位置的特征维度"]
-    ACT["ReLU<br/>[B,T,512]<br/>引入非线性"]
-    FF2["Linear(512,128) + dropout<br/>[B,T,128]<br/>映射回模型宽度"]
-    ADD2["第二次残差相加<br/>output = x1 + FFN_output<br/>[B,T,128]"]
-    X --> LN1
-    LN1 --> Q
-    LN1 --> K --> KT
-    LN1 --> VAL
-    Q --> SCORE
-    KT --> SCORE
-    SCORE --> MASK --> SOFT --> ADROP --> HEAD
-    VAL --> HEAD
-    HEAD --> CAT --> PROJ --> ADD1
-    X -->|残差直连| ADD1
-    ADD1 --> LN2 --> FF1 --> ACT --> FF2 --> ADD2
-    ADD1 -->|残差直连| ADD2
-```
+![Block 内部张量流程图](diagrams/block.png)
+
+[SVG 矢量图](diagrams/block.svg) · [Mermaid 源码](diagrams/block.mmd)
 
 这里的 Q/K/V 分支画的是**一个 head**，代码中有 4 套独立的 Q/K/V 权重。
 训练时 `[B,T,T]` 是 `[8,128,128]`；它的两个 128 都表示位置数量，分别是 query 位置和 key 位置，**不含 embedding 维度**。
@@ -98,29 +51,9 @@ softmax 后每行权重和为 1；训练时紧接着的 dropout 可能改变这�
 例子：prefill 已处理 16 个字符，现在送入第 17 个字符。
 因此 `B=1, S=16, T=1, N=17`。下图仍只画一个层、一个 head。
 
-```mermaid
-flowchart TD
-    X["新位置的归一化输入<br/>[1,1,128]"]
-    Q["新 Q<br/>[1,1,32]"]
-    K["新 K<br/>[1,1,32]"]
-    V["新 V<br/>[1,1,32]"]
-    PK["历史 K 缓存<br/>[1,16,32]"]
-    PV["历史 V 缓存<br/>[1,16,32]"]
-    ALLK["沿序列维 cat<br/>完整 K: [1,17,32]"]
-    ALLV["沿序列维 cat<br/>完整 V: [1,17,32]"]
-    SCORE["Q @ K转置 / sqrt(32)<br/>[1,1,32] @ [1,32,17]<br/>分数 [1,1,17]"]
-    ATTN["取绝对位置 16 的 mask 行<br/>mask: [1,17]，此例全部可见<br/>softmax 后权重 [1,1,17]"]
-    OUT["weights @ V<br/>[1,1,17] @ [1,17,32]<br/>新位置的单头输出 [1,1,32]"]
-    NEXT["返回更新后的 K、V<br/>各为 [1,17,32]<br/>供下一次调用复用"]
-    X --> Q --> SCORE
-    X --> K --> ALLK
-    PK --> ALLK --> SCORE
-    X --> V --> ALLV
-    PV --> ALLV --> OUT
-    SCORE --> ATTN --> OUT
-    ALLK --> NEXT
-    ALLV --> NEXT
-```
+![KV cache 张量流程图](diagrams/kv-cache.png)
+
+[SVG 矢量图](diagrams/kv-cache.svg) · [Mermaid 源码](diagrams/kv-cache.mmd)
 
 每层每个 head 都有自己的缓存，代码结构为 `cache[layer][head] = (K, V)`。
 这是 Python 的嵌套列表与元组，**不是一个统一的六维张量**。
@@ -173,3 +106,9 @@ prefill 的输出预测第一个新字符；decode 输入这个新字符，再�
 LayerNorm 的参数是向量，不做权重矩阵乘法。token embedding 和 lm_head 虽然形状相同，本项目没有共享它们的权重。
 
 这些形状已用当前模型实际运行核对：训练 logits `[8,128,65]`，prefill/decode logits `[1,1,65]`，单头缓存从 `[1,16,32]` 扩展到 `[1,17,32]`。
+
+## 图片与重新导出
+
+上面的流程图直接嵌入 PNG，不依赖 Markdown 预览器执行 Mermaid。SVG 可放大查看，`.mmd` 文件保留图的文字和连接关系。
+
+在项目根目录运行 `python render_tensor_diagrams.py` 可重新导出三组图片。需要 Pillow 和中文字体；默认使用本机 Noto Sans CJK，可用 `--font` 指定其他字体。导出脚本使用本项目的固定布局，并不是通用 Mermaid 编译器。
